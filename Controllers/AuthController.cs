@@ -28,27 +28,15 @@ namespace backend_se.Controllers
         [AllowAnonymous]
         public IActionResult LogIn(LoginDTO req)
         {
-            var secret = _appSettings["JWTInfo:secret"];
-            var issuer = _appSettings["JWTInfo:ValidIssuer"];
-            var audience = _appSettings["JWTInfo:ValidAudience"];
-
-            if (string.IsNullOrEmpty(secret) || string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience))
-                return BadRequest();
-
             var user = _userProvider.Login(req);
 
             if (user == null)
                 return BadRequest();
 
-            var token = JWTHelper.GenerateJWT(user, secret, issuer, audience);
+            if (!CreateAccessToken(user.Id))
+                return BadRequest();
 
-            Response.Cookies.Append("TokenJWT", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddMinutes(15)
-            });
+            JWTHelper.GenerateRefreshToken(Response, user.Id);
 
             return Ok(new { ok = true });
         }
@@ -63,9 +51,40 @@ namespace backend_se.Controllers
         [AllowAnonymous]
         public IActionResult Logout()
         {
-            Response.Cookies.Delete("TokenJWT");
+            JWTHelper.DeleteTokenJWT(Response);
+            JWTHelper.RevokeUserRefreshTokens(UserId ?? 0);
 
             return Ok(new { ok = true });
+        }
+
+        [HttpGet("refresh-token")]
+        [AllowAnonymous]
+        public IActionResult RefreshJWTToken()
+        {
+            JWTHelper.DeleteTokenJWT(Response);
+
+            var userId = JWTHelper.RefreshTokenUserId(RefreshToken ?? "");
+            if (userId == null)
+                return BadRequest();
+
+            return CreateAccessToken(userId ?? 0) ? Ok() : BadRequest();
+        }
+
+        private bool CreateAccessToken(long userId)
+        {
+            var secret = _appSettings["JWTInfo:secret"];
+            var issuer = _appSettings["JWTInfo:ValidIssuer"];
+            var audience = _appSettings["JWTInfo:ValidAudience"];
+
+            var user = _userProvider.GetById(userId);
+            if (user == null)
+                return false;
+
+            if (string.IsNullOrEmpty(secret) || string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience))
+                return false;
+
+            JWTHelper.GenerateJWT(Response, user, secret, issuer, audience);
+            return true;
         }
     }
 }

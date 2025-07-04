@@ -1,5 +1,6 @@
 ﻿using backend_se.Common.Consts;
 using backend_se.Common.Controllers;
+using backend_se.Common.Helpers;
 using backend_se.Common.Providers;
 using backend_se.Data.DTO;
 using backend_se.Data.Models;
@@ -56,6 +57,8 @@ namespace backend_se.Controllers
 
             if (updatedUser == null)
                 return BadRequest("User doesn't exist");
+
+            JWTHelper.RevokeUserRefreshTokens(updatedUser.Id);
 
             return Ok(updatedUser);
         }

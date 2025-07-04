@@ -31,5 +31,13 @@ namespace backend_se.Common.Controllers
                 return userRole;
             }
         }
+
+        public string? RefreshToken
+        {
+            get
+            {
+                return Request.Cookies["RefreshToken"];
+            }
+        }
     }
 }
