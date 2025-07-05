@@ -25,7 +25,11 @@ namespace backend_se.Controllers
         [HttpGet("users")]
         public IActionResult GetUsers()
         {
-            return Ok(_userProvider.GetAll());
+            var users = _userProvider.GetAll();
+
+            var response = users.Select(x => new UserDTO { name = x.Name, username = x.Username, email = x.Email, role = UserHelper.GetUserRole(x.Role) });
+
+            return Ok(response);
         }
 
         [HttpGet("user")]

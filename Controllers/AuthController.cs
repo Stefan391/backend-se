@@ -42,9 +42,35 @@ namespace backend_se.Controllers
         }
 
         [HttpGet]
-        public IActionResult UserRole()
+        public IActionResult UserRefreshInfo()
         {
-            return Ok(new { userRole = Role.ToString() });
+            var role = Role.ToString();
+            if (role == null)
+                return BadRequest();
+
+            var user = _userProvider.GetById(UserId ?? 0);
+            if (user == null)
+                return BadRequest();
+
+            var res = new UserRefreshDTO { username = user.Username, role = role };
+
+            return Ok(res);
+        }
+
+        [HttpGet("user")]
+        public IActionResult UserInfo()
+        {
+            var role = Role.ToString();
+            if (role == null)
+                return BadRequest();
+
+            var user = _userProvider.GetById(UserId ?? 0);
+            if (user == null)
+                return BadRequest();
+
+            var res = new UserDTO { name = user.Name, username = user.Username, email = user.Email, role = role };
+
+            return Ok(res);
         }
 
         [HttpGet("logout")]
