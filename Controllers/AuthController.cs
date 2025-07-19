@@ -52,7 +52,7 @@ namespace backend_se.Controllers
             if (user == null)
                 return BadRequest();
 
-            var res = new UserRefreshDTO { username = user.Username, role = role };
+            var res = new UserRefreshDTO { username = user.Username, role = role, userId = user.Id };
 
             return Ok(res);
         }

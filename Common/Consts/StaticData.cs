@@ -12,5 +12,12 @@ namespace backend_se.Common.Consts
                                                                 new UserModel { Id = 5, Name = "Name5", Email = "name5@gmail.com", Username = "username5", Password = "password5", Role = (short)eUserRole.Admin }};
 
         public static List<RefreshTokenModel> RefreshTokens { get; set; } = new List<RefreshTokenModel>();
+        public static List<ChatHistoryModel> ChatHistoryModels { get; set; } = new List<ChatHistoryModel>
+        {
+            new ChatHistoryModel{ Id = 1, Message = "message1", SenderId = 2, ReceiverId = 1, SentTime = new DateTime(2025, 7, 18, 4, 28, 26) },
+            new ChatHistoryModel{ Id = 2, Message = "message2", SenderId = 3, ReceiverId = 1, SentTime = new DateTime(2025, 7, 17, 7, 16, 35) },
+            new ChatHistoryModel{ Id = 3, Message = "message3", SenderId = 4, ReceiverId = 1, SentTime = new DateTime(2025, 7, 16, 9, 10, 7) },
+            new ChatHistoryModel{ Id = 4, Message = "message4", SenderId = 3, ReceiverId = 2, SentTime = new DateTime(2025, 7, 15, 7, 16, 35) }
+        };
     }
 }

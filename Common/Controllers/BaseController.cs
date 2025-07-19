@@ -10,9 +10,11 @@ namespace backend_se.Common.Controllers
         {
             get
             {
-                var id = User.Claims.First(x => x.Type == ClaimTypes.Sid).Value;
+                var id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Sid);
+                if (id == null)
+                    return null;
 
-                if(!long.TryParse(id, out long userId))
+                if(!long.TryParse(id.Value, out long userId))
                     return null;
 
                 return userId;
@@ -23,9 +25,11 @@ namespace backend_se.Common.Controllers
         {
             get
             {
-                var role = User.Claims.First(x => x.Type == ClaimTypes.Role).Value;
+                var role = User.Claims.First(x => x.Type == ClaimTypes.Role);
+                if (role == null)
+                    return null;
 
-                if (!Enum.TryParse(role, out eUserRole userRole))
+                if (!Enum.TryParse(role.Value, out eUserRole userRole))
                     return null;
 
                 return userRole;

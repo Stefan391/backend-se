@@ -1,6 +1,7 @@
 using backend_se.Common.Providers;
 using backend_se.Data.Models;
 using backend_se.Data.Providers;
+using backend_se.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -85,6 +86,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -104,5 +106,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatNotificationHub>("/notification");
 
 app.Run();
