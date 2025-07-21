@@ -27,8 +27,8 @@ namespace backend_se.Controllers
         {
             var res = new List<ChatDTO>();
 
-            var messageList = StaticData.ChatHistoryModels.Where(x => x.SenderId == UserId || x.ReceiverId == UserId)
-                                .SelectMany(x => new[] { new { OtherUserId = (x.SenderId != UserId ? x.SenderId : x.ReceiverId), x.Message, x.SenderId, x.ReceiverId, x.SentTime } })
+            var messageList = StaticData.ChatHistory.Where(x => x.SenderId == UserId || x.ReceiverId == UserId)
+                                .SelectMany(x => new[] { new { OtherUserId = (x.SenderId != UserId ? x.SenderId : x.ReceiverId), x.Message, x.SenderId, x.ReceiverId, x.SentTime, x.ReadTime } })
                                 .GroupBy(x => x.OtherUserId)
                                 .Select(x => x.OrderByDescending(y => y.SentTime)
                                 .FirstOrDefault())
@@ -43,7 +43,7 @@ namespace backend_se.Controllers
                 if (user == null)
                     continue;
 
-                res.Add(new ChatDTO { userId = user.Id, username = user.Username, message = msg.Message, senderId = msg.SenderId, isRead = true, sentTime = msg.SentTime.ToString("yyyy-MM-ddTHH:mm:ss") });
+                res.Add(new ChatDTO { userId = user.Id, username = user.Username, message = msg.Message, senderId = msg.SenderId, isRead = msg.ReadTime != null, sentTime = msg.SentTime.ToString("yyyy-MM-ddTHH:mm:ss") });
             }
 
             return Ok(res);
@@ -58,11 +58,11 @@ namespace backend_se.Controllers
                 return BadRequest();
 
             var res = new List<MessagesHistory>();
-            var chatHistory = StaticData.ChatHistoryModels.Where(x => (x.SenderId == UserId && x.ReceiverId == user.Id) || (x.SenderId == user.Id && x.ReceiverId == UserId)).OrderByDescending(x => x.SentTime).Take(20).OrderBy(x => x.SentTime);
+            var chatHistory = StaticData.ChatHistory.Where(x => (x.SenderId == UserId && x.ReceiverId == user.Id) || (x.SenderId == user.Id && x.ReceiverId == UserId)).OrderByDescending(x => x.SentTime).Take(20).OrderBy(x => x.SentTime);
             foreach (var msg in chatHistory)
-                res.Add(new MessagesHistory { senderId = msg.SenderId, isRead = true, message = msg.Message, sentTime = msg.SentTime.ToString("yyyy-MM-ddTHH:mm:ss") });
+                res.Add(new MessagesHistory { senderId = msg.SenderId, isRead = true, message = msg.Message, sentTime = msg.SentTime.ToString("yyyy-MM-ddTHH:mm:ss"), messageId = msg.Id, userId = (msg.SenderId == UserId ? msg.ReceiverId : msg.SenderId) });
 
-            return Ok(chatHistory);
+            return Ok(res);
         }
     }
 }

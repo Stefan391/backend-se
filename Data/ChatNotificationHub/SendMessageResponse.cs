@@ -2,6 +2,7 @@
 {
     public class SendMessageResponse
     {
+        public long messageId { get; set; }
         public required string username { get; set; }
         public long userId { get; set; }
         public long senderId { get; set; }

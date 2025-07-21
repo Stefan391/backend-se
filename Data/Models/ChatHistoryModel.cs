@@ -7,5 +7,6 @@
         public long ReceiverId { get; set; }
         public required string Message { get; set; }
         public DateTime SentTime { get; set; }
+        public DateTime? ReadTime { get; set; }
     }
 }

@@ -22,24 +22,52 @@ namespace backend_se.SignalR
 
         public async Task SendMessage(SendMessageRequest req)
         {
-            if(string.IsNullOrWhiteSpace(req.message))
+            if (string.IsNullOrWhiteSpace(req.message))
                 return;
 
             var dbUser = StaticData.Users.FirstOrDefault(x => x.Id == req.userId);
             if (dbUser == null)
                 throw new Exception();
 
-            var userId = Context.User?.Claims.First(x => x.Type == ClaimTypes.Sid).Value;
-            if (string.IsNullOrEmpty(userId) || userId == dbUser.Id.ToString())
+            var u = Context.User?.Claims.First(x => x.Type == ClaimTypes.Sid).Value;
+            if (!long.TryParse(u, out long userId) || userId == dbUser.Id)
                 throw new Exception();
 
-            var loggedUser = StaticData.Users.FirstOrDefault(x => x.Id == long.Parse(userId));
+            var loggedUser = StaticData.Users.FirstOrDefault(x => x.Id == userId);
             if (loggedUser == null)
                 throw new Exception();
 
-            StaticData.ChatHistoryModels.Add(new Data.Models.ChatHistoryModel { Message = req.message, ReceiverId = dbUser.Id, SenderId = loggedUser.Id, SentTime = DateTime.Now });
-            await Clients.Group(dbUser.Id.ToString()).SendAsync("ReceiveMessage", new SendMessageResponse { username = loggedUser.Username, userId = loggedUser.Id, senderId = loggedUser.Id, message = req.message, isRead = false, sentTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")});
-            await Clients.Group(userId).SendAsync("ReceiveMessage", new SendMessageResponse { username = dbUser.Username, userId = dbUser.Id, senderId = loggedUser.Id, message = req.message, isRead = false, sentTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")});
+            var lid = StaticData.ChatHistory.OrderByDescending(x => x.Id).FirstOrDefault();
+            var id = lid == null ? 1 : lid.Id + 1;
+            StaticData.ChatHistory.Add(new Data.Models.ChatHistoryModel { Id = id, Message = req.message, ReceiverId = dbUser.Id, SenderId = loggedUser.Id, SentTime = DateTime.Now });
+            await Clients.Group(dbUser.Id.ToString()).SendAsync("ReceiveMessage", new SendMessageResponse { messageId = id, username = loggedUser.Username, userId = loggedUser.Id, senderId = loggedUser.Id, message = req.message, isRead = false, sentTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") });
+            await Clients.Group(userId.ToString()).SendAsync("ReceiveMessage", new SendMessageResponse { messageId = id, username = dbUser.Username, userId = dbUser.Id, senderId = loggedUser.Id, message = req.message, isRead = false, sentTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") });
+        }
+
+        public async Task ReadMessage(ReadMessageRequest req)
+        {
+            var u = Context.User?.Claims.First(x => x.Type == ClaimTypes.Sid).Value;
+            if (!long.TryParse(u, out long userId))
+                throw new Exception();
+
+            var message = StaticData.ChatHistory.FirstOrDefault(x => x.Id == req.messageId && x.ReceiverId == userId);
+            if (message == null)
+                return;
+
+            var msgs = StaticData.ChatHistory.Where(x => x.SenderId == message.SenderId && x.ReceiverId == userId && x.ReadTime == null).ToList();
+            foreach (var msg in msgs)
+                msg.ReadTime = DateTime.Now;
+
+            await Clients.Group(message.SenderId.ToString()).SendAsync("MessageRead", new ReadMessageRequest { messageId = message.Id, readerId = message.ReceiverId });
+        }
+
+        public async Task StartTyping(StartTypingRequest req)
+        {
+            var u = Context.User?.Claims.First(x => x.Type == ClaimTypes.Sid).Value;
+            if (!long.TryParse(u, out long userId) || userId != req.senderId || req.senderId == req.receiverId)
+                throw new Exception();
+
+            await Clients.Group(req.receiverId.ToString()).SendAsync("StartedTyping", req);
         }
     }
 }
