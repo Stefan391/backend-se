@@ -40,8 +40,9 @@ namespace backend_se.SignalR
             var lid = StaticData.ChatHistory.OrderByDescending(x => x.Id).FirstOrDefault();
             var id = lid == null ? 1 : lid.Id + 1;
             StaticData.ChatHistory.Add(new Data.Models.ChatHistoryModel { Id = id, Message = req.message, ReceiverId = dbUser.Id, SenderId = loggedUser.Id, SentTime = DateTime.Now });
-            await Clients.Group(dbUser.Id.ToString()).SendAsync("ReceiveMessage", new SendMessageResponse { messageId = id, username = loggedUser.Username, userId = loggedUser.Id, senderId = loggedUser.Id, message = req.message, isRead = false, sentTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") });
-            await Clients.Group(userId.ToString()).SendAsync("ReceiveMessage", new SendMessageResponse { messageId = id, username = dbUser.Username, userId = dbUser.Id, senderId = loggedUser.Id, message = req.message, isRead = false, sentTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") });
+            var unreadCount = StaticData.ChatHistory.Where(x => x.SenderId == loggedUser.Id && x.ReceiverId == dbUser.Id && x.ReadTime == null).Take(11).ToList().Count;
+            await Clients.Group(dbUser.Id.ToString()).SendAsync("ReceiveMessage", new SendMessageResponse { messageId = id, username = loggedUser.Username, userId = loggedUser.Id, senderId = loggedUser.Id, message = req.message, isRead = false, sentTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"), unreadCount = unreadCount });
+            await Clients.Group(userId.ToString()).SendAsync("ReceiveMessage", new SendMessageResponse { messageId = id, username = dbUser.Username, userId = dbUser.Id, senderId = loggedUser.Id, message = req.message, isRead = false, sentTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"), unreadCount = 0 });
         }
 
         public async Task ReadMessage(ReadMessageRequest req)

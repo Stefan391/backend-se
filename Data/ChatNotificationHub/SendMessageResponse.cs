@@ -9,5 +9,6 @@
         public bool isRead { get; set; }
         public required string message { get; set; }
         public required string sentTime { get; set; }
+        public long unreadCount { get; set; }
     }
 }
