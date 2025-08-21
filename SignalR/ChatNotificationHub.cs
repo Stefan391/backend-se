@@ -22,7 +22,7 @@ namespace backend_se.SignalR
 
         public async Task SendMessage(SendMessageRequest req)
         {
-            if (string.IsNullOrWhiteSpace(req.message))
+            if (string.IsNullOrWhiteSpace(req.message) || req.message.Length > 100)
                 return;
 
             var dbUser = StaticData.Users.FirstOrDefault(x => x.Id == req.userId);

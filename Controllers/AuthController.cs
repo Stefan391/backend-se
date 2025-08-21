@@ -4,6 +4,7 @@ using backend_se.Common.Providers;
 using backend_se.Data.DTO;
 using backend_se.Data.Models;
 using backend_se.Data.Providers;
+using backend_se.Data.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace backend_se.Controllers
         private UserProvider _userProvider;
         private IConfiguration _appSettings;
 
-        public AuthController(IDataProvider<UserModel> dataProvider, IConfiguration appSettings)
+        public AuthController(IDataProvider<UserModel, UserSearch> dataProvider, IConfiguration appSettings)
         {
             _userProvider = (UserProvider)dataProvider;
             _appSettings = appSettings;

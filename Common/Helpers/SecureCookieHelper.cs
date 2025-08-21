@@ -21,7 +21,7 @@
             if (string.IsNullOrEmpty(name))
                 return;
 
-            response.Cookies.Delete(name);
+            AppendSecureCookie(response, name, " ", DateTime.Now.AddDays(-2));
         }
     }
 }

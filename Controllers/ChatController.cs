@@ -5,6 +5,7 @@ using backend_se.Common.Providers;
 using backend_se.Data.DTO;
 using backend_se.Data.Models;
 using backend_se.Data.Providers;
+using backend_se.Data.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace backend_se.Controllers
     public class ChatController : BaseController
     {
         private UserProvider _userProvider;
-        public ChatController(IDataProvider<UserModel> userProvider)
+        public ChatController(IDataProvider<UserModel, UserSearch> userProvider)
         {
             _userProvider = (UserProvider)userProvider;
         }

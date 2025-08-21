@@ -2,11 +2,12 @@
 using backend_se.Common.Providers;
 using backend_se.Data.DTO;
 using backend_se.Data.Models;
+using backend_se.Data.Search;
 using System.Reflection;
 
 namespace backend_se.Data.Providers
 {
-    public class UserProvider : IDataProvider<UserModel>
+    public class UserProvider : IDataProvider<UserModel, UserSearch>
     {
         public UserModel? GetById(long id)
         {
@@ -34,6 +35,19 @@ namespace backend_se.Data.Providers
             return user;
         }
 
+        public UserModel? Save(UserModel model)
+        {
+            if(StaticData.Users.Where(x => x.Id == model.Id) != null)
+            {
+                var user = StaticData.Users.FirstOrDefault(x => x.Id == model.Id);
+                user = model;
+                return user;
+            }
+
+            StaticData.Users.Add(model);
+            return model;
+        }
+
         public bool Delete(long id)
         {
             var user = StaticData.Users.FirstOrDefault(x => x.Id == id);
@@ -45,9 +59,9 @@ namespace backend_se.Data.Providers
             return true;
         }
 
-        public List<UserModel> GetAll()
+        public IQueryable<UserModel> GetList(UserSearch search)
         {
-            return StaticData.Users.ToList();
+            return StaticData.Users.AsQueryable();
         }
 
         public UserModel? Login(LoginDTO req)

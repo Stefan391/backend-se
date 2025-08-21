@@ -5,6 +5,7 @@ using backend_se.Common.Providers;
 using backend_se.Data.DTO;
 using backend_se.Data.Models;
 using backend_se.Data.Providers;
+using backend_se.Data.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace backend_se.Controllers
     public class UserController : BaseController
     {
         private UserProvider _userProvider;
-        public UserController(IDataProvider<UserModel> userProvider)
+        public UserController(IDataProvider<UserModel, UserSearch> userProvider)
         {
             _userProvider = (UserProvider)userProvider;
         }
@@ -25,7 +26,7 @@ namespace backend_se.Controllers
         [HttpGet("users")]
         public IActionResult GetUsers()
         {
-            var users = _userProvider.GetAll();
+            var users = _userProvider.GetList(new UserSearch { });
 
             var response = users.Select(x => new UserDTO { name = x.Name, username = x.Username, email = x.Email, role = UserHelper.GetUserRole(x.Role) });
 

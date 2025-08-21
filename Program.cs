@@ -1,6 +1,7 @@
 using backend_se.Common.Providers;
 using backend_se.Data.Models;
 using backend_se.Data.Providers;
+using backend_se.Data.Search;
 using backend_se.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -23,7 +24,11 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddScoped<IDataProvider<UserModel>, UserProvider>();
+builder.Services.AddScoped<IDataProvider<UserModel, UserSearch>, UserProvider>();
+builder.Services.AddScoped<IDataProvider<ProductModel, ProductSearch>, ProductProvider>();
+builder.Services.AddScoped<IDataProvider<CurrencyModel, CurrencySearch>, CurrencyProvider>();
+builder.Services.AddScoped<IDataProvider<CategoryModel, CategorySearch>, CategoryProvider>();
+builder.Services.AddScoped<IDataProvider<SpecificationModel, SpecificationSearch>, SpecificationProvider>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
