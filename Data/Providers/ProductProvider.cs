@@ -13,6 +13,53 @@ namespace backend_se.Data.Providers
             return StaticData.Products.FirstOrDefault(x => x.Id == id);
         }
 
+        public ProductViewModelDTO? GetViewProduct(long id)
+        {
+            var product = StaticData.Products.FirstOrDefault(x => x.Id == id);
+
+            if (product == null)
+                return null;
+
+            var user = StaticData.Users.FirstOrDefault(x => x.Id == product.UserId);
+
+            var currency = StaticData.Currencies.FirstOrDefault(x => x.Id == product.CurrencyId);
+
+            var city = StaticData.Cities.FirstOrDefault(x => x.Id == user!.CityId);
+
+            var specifications = StaticData.ProductSpecifications.Where(x => x.ProductId == product.Id);
+            var productSpecifications = new List<ProductSpecificationView>();
+
+            foreach(var specification in specifications)
+            {
+                var spec = StaticData.Specifications.FirstOrDefault(x => x.Id == specification.SpecificationId);
+                productSpecifications.Add(new ProductSpecificationView
+                {
+                    Name = spec!.Name,
+                    Value = spec.IsBool ? specification.BoolValue.ToString() : specification.Value
+                });
+            }
+
+            var images = StaticData.ProductImages.Where(x => x.ProductId == product.Id).OrderBy(x => x.DisplayIndex).Select(x => x.ImageUrl).ToList();
+
+            var res = new ProductViewModelDTO
+            {
+                ProductId = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                UserId = product.UserId,
+                Username = user!.Username,
+                Created = product.Created,
+                Price = product.Price,
+                CurrencyName = currency!.DisplayName,
+                CityName = city!.Name,
+                Condition = product.Condition,
+                Specifications = productSpecifications,
+                Images = images
+            };
+
+            return res;
+        }
+
         public ProductModel? Add(ProductModel model)
         {
             if (StaticData.Products.FirstOrDefault(x => x.Id == model.Id) != null)

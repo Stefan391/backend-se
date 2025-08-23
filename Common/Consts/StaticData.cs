@@ -16,7 +16,7 @@ namespace backend_se.Common.Consts
         {
             new() { Id = 1, Message = "message1", SenderId = 2, ReceiverId = 1, SentTime = new DateTime(2025, 7, 18, 4, 28, 26) },
             new() { Id = 2, Message = "message2", SenderId = 3, ReceiverId = 1, SentTime = new DateTime(2025, 7, 17, 7, 16, 35) },
-            new() { Id = 3, Message = "message3", SenderId = 4, ReceiverId = 1, SentTime = new DateTime(2025, 7, 16, 9, 10, 7) },
+            //new() { Id = 3, Message = "message3", SenderId = 4, ReceiverId = 1, SentTime = new DateTime(2025, 7, 16, 9, 10, 7) },
             new() { Id = 4, Message = "message4", SenderId = 3, ReceiverId = 2, SentTime = new DateTime(2025, 7, 15, 7, 16, 35) }
         };
         public static List<CityModel> Cities { get; set; } = new List<CityModel>
@@ -28,8 +28,8 @@ namespace backend_se.Common.Consts
         };
         public static List<CurrencyModel> Currencies { get; set; } = new List<CurrencyModel>
         {
-            new() {Id = 1, Name = "Euro", DisplayName = "eur"},
-            new() {Id = 2, Name = "Serbian Dinar", DisplayName = "rsd"}
+            new() {Id = 1, Name = "Euro", DisplayName = "€"},
+            new() {Id = 2, Name = "Serbian Dinar", DisplayName = "RSD"}
         };
         public static List<ProductModel> Products { get; set; } = new List<ProductModel>
         {
@@ -39,6 +39,7 @@ namespace backend_se.Common.Consts
             new() { Id = 4, Displayed = true, Name = "iPhone 7", Description = "Phone is broken, sold for parts", UserId = 4, Condition = (short)eProductCondition.Broken, Created = new DateTime(2025, 7, 15, 7, 16, 35), Price = 25.00M, CurrencyId = 1},
             new() { Id = 5, Displayed = true, Name = "Blue Shirt", Description = "Blue Shirt, new", UserId = 1, Condition = (short)eProductCondition.New, Created = new DateTime(2025, 7, 15, 7, 16, 35), Price = 25.00M, CurrencyId = 1},
         };
+        public static List<ProductImageModel> ProductImages { get; set; } = new List<ProductImageModel>();
         public static List<SpecificationModel> Specifications { get; set; } = new List<SpecificationModel>{
             new(){ Id = 1, Name = "Screen size", IsBool = false },
             new(){ Id = 2, Name = "Color", IsBool = false },

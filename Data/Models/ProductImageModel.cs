@@ -3,6 +3,7 @@
     public class ProductImageModel
     {
         public int Id { get; set; }
+        public int ProductId { get; set; }
         public required string ImageUrl { get; set; }
         public int? DisplayIndex { get; set; }
     }

@@ -23,6 +23,13 @@ namespace backend_se.Controllers
             _currencyProvider = (CurrencyProvider)currencyProvider;
         }
 
+        [HttpGet("Product")]
+        public IActionResult Product(int productId)
+        {
+            var product = _productProvider.GetViewProduct(productId);
+            return Ok(product);
+        }
+
         [HttpGet("MyProducts")]
         public IActionResult MyProducts()
         {
@@ -34,7 +41,19 @@ namespace backend_se.Controllers
         public IActionResult AllProducts(ProductSearch search)
         {
             search.Displayed = true;
-            return Ok(_productProvider.GetList(search));
+            var response = _productProvider.GetList(search);
+
+            if (!search.UserId.HasValue)
+                response = response.Where(x => x.UserId != (UserId ?? 0));
+
+            return Ok(response);
+        }
+
+        [HttpGet("Conditions")]
+        public IActionResult GetConditions()
+        {
+            var list = Enum.GetValues(typeof(eProductCondition)).Cast<eProductCondition>().Select(x => new { name = x.ToString(), value = (short)x });
+            return Ok(list);
         }
 
         [Authorize(Roles = nameof(eUserRole.Basic))]

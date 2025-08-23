@@ -73,5 +73,16 @@ namespace backend_se.Controllers
 
             return Ok(res);
         }
+
+        [HttpGet("chatuser")]
+        public IActionResult GetChatUser(long userId)
+        {
+            var user = _userProvider.GetById(userId);
+
+            if (user == null)
+                return BadRequest("User doesn't exist");
+
+            return Ok(new ChatUserDTO { UserId = user.Id, Username = user.Username });
+        }
     }
 }
