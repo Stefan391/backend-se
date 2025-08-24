@@ -43,6 +43,9 @@ namespace backend_se.Controllers
             search.Displayed = true;
             var response = _productProvider.GetList(search);
 
+            if(!search.UserId.HasValue || search.UserId != (UserId ?? 0))
+                response = response.Where(x => x.Displayed == true);
+
             if (!search.UserId.HasValue)
                 response = response.Where(x => x.UserId != (UserId ?? 0));
 

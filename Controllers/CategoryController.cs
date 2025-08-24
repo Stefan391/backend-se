@@ -23,7 +23,7 @@ namespace backend_se.Controllers
         [HttpGet("Categories")]
         public IActionResult GetCategories()
         {
-            return Ok(_productCategoryProvider.GetList(new CategorySearch { }));
+            return Ok(_productCategoryProvider.GetList(new CategorySearch { }).Select(x => new { value = x.Id, name = x.Name}));
         }
     }
 }

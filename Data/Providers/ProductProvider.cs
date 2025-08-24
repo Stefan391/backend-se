@@ -50,11 +50,14 @@ namespace backend_se.Data.Providers
                 Username = user!.Username,
                 Created = product.Created,
                 Price = product.Price,
+                CurrencyId = currency!.Id,
                 CurrencyName = currency!.DisplayName,
                 CityName = city!.Name,
                 Condition = product.Condition,
+                ConditionName = ((eProductCondition)product.Condition).ToString(),
                 Specifications = productSpecifications,
-                Images = images
+                Images = images,
+                Displayed = product.Displayed
             };
 
             return res;
