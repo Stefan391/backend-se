@@ -16,11 +16,14 @@
         public required string ConditionName { get; set; }
         public bool Displayed { get; set; }
         public List<ProductSpecificationView> Specifications { get; set; } = new List<ProductSpecificationView>();
+        public List<string> CategoryIds { get; set; } = new List<string>();
+        public List<string> CategoryNames { get; set; } = new List<string>();
         public List<string> Images { get; set; } = new List<string>();
     }
 
     public class ProductSpecificationView
     {
+        public int SpecificationId { get; set; }
         public required string Name { get; set; }
         public required string Value { get; set; }
     }

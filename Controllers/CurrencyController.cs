@@ -28,7 +28,7 @@ namespace backend_se.Controllers
         public IActionResult GetCurrencies()
         {
             var res = _currencyProivder.GetList(new CurrencySearch { });
-            return Ok(res);
+            return Ok(res.Select(x => new {value = x.Id, name = x.Name}));
         }
     }
 }

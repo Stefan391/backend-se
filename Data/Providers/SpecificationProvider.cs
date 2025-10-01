@@ -67,6 +67,9 @@ namespace backend_se.Data.Providers
                 response = response.Where(x => StaticData.SpecificationCategories.FirstOrDefault(y => y.SpecificationId == x.Id && y.CategoryId == search.CategoryId) != null);
             }
 
+            if (search.CategoryIds.Count > 0)
+                response = response.Where(x => StaticData.SpecificationCategories.FirstOrDefault(y => search.CategoryIds.Contains(y.CategoryId) && y.SpecificationId == x.Id) != null);
+
             return response;
         }
 

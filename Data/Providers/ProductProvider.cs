@@ -26,6 +26,8 @@ namespace backend_se.Data.Providers
 
             var city = StaticData.Cities.FirstOrDefault(x => x.Id == user!.CityId);
 
+            var categories = StaticData.Categories.Where(x => StaticData.ProductCategories.FirstOrDefault(y => y.CategoryId == x.Id && y.ProductId == id) != null).Select(x => x.Id.ToString()).ToList();
+
             var specifications = StaticData.ProductSpecifications.Where(x => x.ProductId == product.Id);
             var productSpecifications = new List<ProductSpecificationView>();
 
@@ -34,6 +36,7 @@ namespace backend_se.Data.Providers
                 var spec = StaticData.Specifications.FirstOrDefault(x => x.Id == specification.SpecificationId);
                 productSpecifications.Add(new ProductSpecificationView
                 {
+                    SpecificationId = spec!.Id,
                     Name = spec!.Name,
                     Value = spec.IsBool ? specification.BoolValue.ToString() : specification.Value
                 });
@@ -57,7 +60,8 @@ namespace backend_se.Data.Providers
                 ConditionName = ((eProductCondition)product.Condition).ToString(),
                 Specifications = productSpecifications,
                 Images = images,
-                Displayed = product.Displayed
+                Displayed = product.Displayed,
+                CategoryIds = categories
             };
 
             return res;
